@@ -1,5 +1,6 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/connection');
+const bcrypt =  require('bcrypt');
 
 //create our User model
 class User extends Model {}
@@ -42,10 +43,34 @@ User.init(
             // this means the password must be at least four characters long
             len: [4]
           }
-        },
+        }
         //TABLE COLUNM DEFINITIONS GO HERE
     },
     {
+        //added to the second object in user.init()
+        // hooks: {
+        //     // set up beforeCreate lifecycle "hook" functionality
+        //     beforeCreate(userData) {
+        //         //saltround value is 10 //newUserData is newly hashed password property
+        //     return bcrypt.hash(userData.password, 10).then(newUserData => {
+        //     return newUserData
+        //     });
+        // }
+        // },
+        //this is the above function using async/await
+        hooks: {
+            // set up beforeCreate lifecycle "hook" functionality
+            async beforeCreate(newUserData) {
+              newUserData.password = await bcrypt.hash(newUserData.password, 10);
+              return newUserData;
+            },
+              // set up beforeUpdate lifecycle "hook" functionality
+            async beforeUpdate(updatedUserData) {
+            updatedUserData.password = await bcrypt.hash(updatedUserData.password, 10);
+            return updatedUserData;
+            }
+          },
+
         // TABLE CONFIGURATION OPTIONS GO HERE (https://sequelize.org/v5/manual/models-definition.html#configuration))
         //pass in our impored sequelize connection (the direct connection to our database)
         sequelize,
