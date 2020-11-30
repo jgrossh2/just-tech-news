@@ -1,6 +1,6 @@
 const sequelize = require('../../config/connection');
 const router = require('express').Router();
-const { Post, User, Vote } = require('../../models');
+const { Post, User, Vote, Comment } = require('../../models');
 
 // get all users
 router.get('/', (req, res) => {
@@ -12,6 +12,16 @@ router.get('/', (req, res) => {
       order: [['created_at', 'DESC']], 
       //include is an array of objects
       include: [
+          // include the Comment model here:
+        {
+            model: Comment,
+            attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+            //includes the model user in order to attach the username to the comment
+            include: {
+            model: User,
+            attributes: ['username']
+            }
+        },
         {
           model: User,
           attributes: ['username']
@@ -32,6 +42,16 @@ router.get('/:id', (req, res) => {
       attributes: ['id', 'post_url', 'title', 'created_at', [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count'],
     ],
       include: [
+           // include the Comment model here:
+        {
+            model: Comment,
+            attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+            include: {
+            // includes model to attach username
+            model: User,
+            attributes: ['username']
+            }
+        },
         {
           model: User,
           attributes: ['username']
