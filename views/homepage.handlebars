@@ -2,19 +2,8 @@
     <!--declaring post variable name for subsequent placeholder-->
     {{#each posts as |post|}}
   <li>
-    <article class="post">
-      <div class="title">
-          <!--  3 curly braces will render data as html, 2 curly braces will convert HTML to strings-->
-        <a href="{{post_url}}" target="_blank">{{title}}</a>
-        <span>({{post_url}})</span>
-      </div>
-      <div class="meta">
-        {{vote_count}} point(s) by {{user.username}} on
-        {{created_at}}
-        |
-        <a href="/post/{{id}}">{{comments.length}} comment(s)</a>
-      </div>
-    </article>
+    <!-- < used for partial file-->
+     {{> post-info post }}
   </li>
   {{/each}}
 </ol>
